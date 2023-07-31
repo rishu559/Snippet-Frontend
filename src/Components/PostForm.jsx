@@ -137,6 +137,7 @@ const FormComponent = () => {
         try{
             const {data}=await axios.post(serverURL,formData);
             setFormData(initialFormData);
+            setCode({ code: '', language: '' });
         }catch(error){
             console.log(error); 
         }
