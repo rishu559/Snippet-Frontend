@@ -52,7 +52,7 @@ function App() {
         <div className="App">
           <Search search={search} setSearch={setSearch} />
           <ResultCardContainer>
-            {cardList.length===0 ? <Error/> :cardList?.map((list) => (
+            {cardList.length===0 ? search!=="" && <Error/> :cardList?.map((list) => (
               <ResultCard key={list.id} list={list} setValue={setValue} />
             ))}
             
