@@ -136,7 +136,7 @@ const FormComponent = () => {
     const postData=async()=>{
         try{
             const {data}=await axios.post(serverURL,formData);
-            console.log(data);
+            setFormData(initialFormData);
         }catch(error){
             console.log(error); 
         }
