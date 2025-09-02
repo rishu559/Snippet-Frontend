@@ -3,9 +3,8 @@ import axios from 'axios';
 import styled from 'styled-components'; // Import Styled Components
 
 const initialFormData = {
-  title: '',
-  id: '',
-  description: '',
+  title: "",
+  description: "",
   code: [],
   secret: '',
 };
@@ -120,40 +119,37 @@ const Textarea = styled.input`
 
 const FormComponent = () => {
   const [formData, setFormData] = useState(initialFormData);
-  const [code, setCode] = useState({ code: '', language: '' });
+  const [code, setCode] = useState({ code: "", language: "" });
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
-  // ... (rest of the code remains the same)
-  const serverURL = 'https://snippet-backend.vercel.app/api/snippet'; // Replace with the actual server URL
 
-    // Make the POST request
-    const handleSubmit=(e)=>{
+  const handleSubmit=(e)=>{
         e.preventDefault();
     }
-    const postData=async()=>{
-        try{
-            const {data}=await axios.post(serverURL,formData);
-            setFormData(initialFormData);
-            setCode({ code: '', language: '' });
-        }catch(error){
-            console.log(error); 
-        }
-    }
-  const setCodeRec=(e)=>{
-    let {name,value}=e.target;
-    setCode((prev)=>({...prev,[name]: value}));
-    
-  }
-  const setFormDataRec=(e)=>{
-    let arr=formData.code;
+  // Save snippet to localStorage
+  const postData = () => {
+    let snippets = localStorage.getItem("snippets");
+    snippets = snippets ? JSON.parse(snippets) : [];
+    snippets.push(formData);
+    localStorage.setItem("snippets", JSON.stringify(snippets));
+    setFormData(initialFormData);
+    setCode({ code: "", language: "" });
+  };
+
+  const setCodeRec = (e) => {
+    let { name, value } = e.target;
+    setCode((prev) => ({ ...prev, [name]: value }));
+  };
+  const setFormDataRec = (e) => {
+    let arr = formData.code;
 
     arr.push(code);
-    setFormData((item)=>({...formData,[code]:arr}));
-    setCode({code:"",language:""})
-  }
+    setFormData((item) => ({ ...formData, [code]: arr }));
+    setCode({ code: "", language: "" });
+  };
   return (
     <FormContainer>
       <Form onSubmit={(e) => handleSubmit(e)}>
@@ -169,28 +165,30 @@ const FormComponent = () => {
         </InputGroup>
 
         <InputGroup>
-          <label htmlFor="id">ID:</label>
-          <Input type="text" id="id" name="id" value={formData.id} onChange={handleChange} />
-        </InputGroup>
-
-        <InputGroup>
           <label htmlFor="description">Description:</label>
-          <Textarea  id="description" name="description" value={formData.description} onChange={handleChange} />
+          <Textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+          />
         </InputGroup>
 
         <InputGroup>
           <label htmlFor="secret">Secret:</label>
-          <Input  type="password" name="secret" value={formData.secret} onChange={handleChange} />
+          <Input
+            type="password"
+            name="secret"
+            value={formData.secret}
+            onChange={handleChange}
+          />
         </InputGroup>
 
-        
-     
-      
-      <SubmitButton type="submit" onClick={postData}>
+        <SubmitButton type="submit" onClick={postData}>
           Submit
         </SubmitButton>
-        </Form>
-        <CodeSection>
+      </Form>
+      <CodeSection>
         <CodeTextArea name="code" value={code.code} onChange={setCodeRec} />
         <LanguageInput
           type="text"
@@ -199,7 +197,7 @@ const FormComponent = () => {
           onChange={setCodeRec}
         />
       </CodeSection>
-        <AddButton onClick={setFormDataRec}>Add</AddButton>
+      <AddButton onClick={setFormDataRec}>Add</AddButton>
     </FormContainer>
   );
 };

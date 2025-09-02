@@ -3,7 +3,6 @@ import Code from "./Components/Code";
 import FormComponent from "./Components/PostForm";
 import Search from "./Components/Navbar";
 import ResultCard from "./Components/ResultCard";
-import axios from "axios";
 
 import {
   createBrowserRouter,
@@ -12,7 +11,7 @@ import {
   Navigate,
   Link,
 } from "react-router-dom";
-import { styled } from "styled-components";
+import styled from "styled-components";
 import Error from "./Components/Error";
 
 const ResultCardContainer = styled.div`
@@ -23,26 +22,38 @@ const ResultCardContainer = styled.div`
     display: none;
   }
 `;
+
+const CardGrid = styled.div`
+  display: flex;
+`;
+
 function App() {
   const [cardList, setCardList] = useState([]);
   const [value, setValue] = useState({
     flag: false,
     data: { title: "", description: "", code: [] },
   });
-
   const [search, setSearch] = useState("");
+
+  // Fetch snippets from localStorage
+  const getSnippets = () => {
+    const data = localStorage.getItem("snippets");
+    return data ? JSON.parse(data) : [];
+  };
+
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await axios.get(
-          `https://snippet-backend.vercel.app/api/snippet?search=${search}`
-        );
-        setCardList(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getData();
+    const allSnippets = getSnippets();
+    if (search) {
+      setCardList(
+        allSnippets.filter(
+          (item) =>
+            item.title.toLowerCase().includes(search.toLowerCase()) ||
+            item.description.toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    } else {
+      setCardList(allSnippets);
+    }
   }, [search]);
 
   const router = createBrowserRouter([
@@ -52,10 +63,15 @@ function App() {
         <div className="App">
           <Search search={search} setSearch={setSearch} />
           <ResultCardContainer>
-            {cardList.length===0 ? search!=="" && <Error/> :cardList?.map((list) => (
-              <ResultCard key={list.id} list={list} setValue={setValue} />
-            ))}
-            
+            {cardList.length === 0 ? (
+              search !== "" && <Error />
+            ) : (
+              <div>
+                {cardList.map((item, idx) => (
+                  <ResultCard key={idx} list={item} setValue={setValue} />
+                ))}
+              </div>
+            )}
           </ResultCardContainer>
 
           {value.flag && <Code props={value.data} setValue={setValue} />}
