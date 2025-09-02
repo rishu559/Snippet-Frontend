@@ -1,4 +1,3 @@
-
 import React from 'react'
 import styled from "styled-components"
 import Tag from './Tag'
@@ -6,12 +5,15 @@ import { TableBody } from '@mui/material'
 
 
 const Container = styled.div`
-    width: 90%;
+    flex: 1 1 30%;
+    min-width: 300px;
+    max-width: 32%;
     min-height: 120px;
     padding: 10px;
-    margin:15px auto;
+    margin: 0;
     background: #2A2A2C;
     border-radius: 10px;
+    box-sizing: border-box;
 
     &:hover{
         cursor: pointer;
@@ -19,7 +21,6 @@ const Container = styled.div`
         transition: all 0.3s ease;
         background: #242424;
     }
-    
 `
 const TopDiv = styled.div`
     flex:1;

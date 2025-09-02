@@ -25,6 +25,9 @@ const ResultCardContainer = styled.div`
 
 const CardGrid = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
 `;
 
 function App() {
@@ -66,11 +69,11 @@ function App() {
             {cardList.length === 0 ? (
               search !== "" && <Error />
             ) : (
-              <div>
+              <CardGrid>
                 {cardList.map((item, idx) => (
                   <ResultCard key={idx} list={item} setValue={setValue} />
                 ))}
-              </div>
+              </CardGrid>
             )}
           </ResultCardContainer>
 
