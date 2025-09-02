@@ -120,39 +120,67 @@ const Textarea = styled.input`
 const FormComponent = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [code, setCode] = useState({ code: "", language: "" });
+  const [error, setError] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
-  const handleSubmit=(e)=>{
-        e.preventDefault();
+  const isFormValid = () => {
+    if (
+      !formData.title.trim() ||
+      !formData.description.trim() ||
+      formData.code.length === 0 ||
+      formData.code.some(
+        (c) => !c.code.trim() || !c.language.trim()
+      )
+    ) {
+      return false;
     }
+    return true;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isFormValid()) {
+      setError("All fields (title, description, code, language) are required.");
+      return;
+    }
+    setError("");
+    postData();
+  };
+
   // Save snippet to localStorage
-  const postData = () => {
+ const postData = () => {
     let snippets = localStorage.getItem("snippets");
     snippets = snippets ? JSON.parse(snippets) : [];
     snippets.push(formData);
     localStorage.setItem("snippets", JSON.stringify(snippets));
-    setFormData(initialFormData);
-    setCode({ code: "", language: "" });
-  };
+    setFormData({ title: "", description: "", code: [] }); // reset all fields
+    setCode({ code: "", language: "" }); // reset code and tag input
+};
 
   const setCodeRec = (e) => {
     let { name, value } = e.target;
     setCode((prev) => ({ ...prev, [name]: value }));
   };
-  const setFormDataRec = (e) => {
-    let arr = formData.code;
 
+  const setFormDataRec = (e) => {
+    if (!code.code.trim() || !code.language.trim()) {
+      setError("Code and language cannot be empty.");
+      return;
+    }
+    let arr = formData.code;
     arr.push(code);
-    setFormData((item) => ({ ...formData, [code]: arr }));
+    setFormData((item) => ({ ...formData, code: arr }));
     setCode({ code: "", language: "" });
+    setError("");
   };
+
   return (
     <FormContainer>
-      <Form onSubmit={(e) => handleSubmit(e)}>
+      <Form onSubmit={handleSubmit}>
         <InputGroup>
           <label htmlFor="title">Title:</label>
           <Input
@@ -174,19 +202,10 @@ const FormComponent = () => {
           />
         </InputGroup>
 
-        <InputGroup>
-          <label htmlFor="secret">Secret:</label>
-          <Input
-            type="password"
-            name="secret"
-            value={formData.secret}
-            onChange={handleChange}
-          />
-        </InputGroup>
-
-        <SubmitButton type="submit" onClick={postData}>
+        <SubmitButton type="submit" disabled={!isFormValid()}>
           Submit
         </SubmitButton>
+        {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
       </Form>
       <CodeSection>
         <CodeTextArea name="code" value={code.code} onChange={setCodeRec} />
